@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    rabbitmq = {
+      source  = "cyrilgdn/rabbitmq"
+      version = "1.8.0"
+    }
+  }
+}
+
 provider "aws" {
   region = "us-east-1"
 }
@@ -20,4 +29,20 @@ resource "aws_mq_broker" "POC-AUTO-my-broker" {
   }
 
   publicly_accessible = true
+}
+
+provider "rabbitmq" {
+  endpoint = aws_mq_broker.POC-AUTO-my-broker.instances[0].console_url
+  username = "hardcore"
+  password = var.broker_password
+}
+
+resource "rabbitmq_exchange" "my-exchange" {
+  name  = "my-exchange"
+  vhost = "/"
+  settings {
+    type        = "direct"
+    durable     = true
+    auto_delete = false
+  }
 }
