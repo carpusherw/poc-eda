@@ -23,6 +23,9 @@ module "eventbridge" {
       event_pattern = jsonencode({
         source      = ["com.gofreight.publisher"],
         detail-type = ["something-really-matters"],
+        detail = {
+          action = ["created"],
+        },
       })
     }
   }
@@ -126,5 +129,5 @@ resource "rabbitmq_binding" "something-really-matters-queue-binding" {
   vhost            = "/"
   destination_type = "queue"
   destination      = rabbitmq_queue.something-really-matters-queue.name
-  routing_key      = "com.gofreight.publisher:something-really-matters"
+  routing_key      = "com.gofreight.publisher:something-really-matters:created"
 }
