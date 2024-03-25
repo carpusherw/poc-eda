@@ -53,13 +53,13 @@ module "lambda" {
     }
     mq = {
       principal  = "mq.amazonaws.com"
-      source_arn = "arn:aws:mq:us-east-1:478041131377:broker:POC-AUTO-my-broker:b-0fdaad4f-1ca3-4a80-b189-ee129dc18388"
+      source_arn = var.broker_arn
     }
   }
 
   event_source_mapping = {
     mq = {
-      event_source_arn = "arn:aws:mq:us-east-1:478041131377:broker:POC-AUTO-my-broker:b-0fdaad4f-1ca3-4a80-b189-ee129dc18388"
+      event_source_arn = var.broker_arn
       queues           = [rabbitmq_queue.something-really-matters-queue.name]
       batch_size       = 1
       source_access_configuration = [
@@ -87,7 +87,7 @@ module "lambda" {
     mq_describe_broker = {
       effect    = "Allow",
       actions   = ["mq:DescribeBroker"],
-      resources = ["arn:aws:mq:us-east-1:478041131377:broker:POC-AUTO-my-broker:b-0fdaad4f-1ca3-4a80-b189-ee129dc18388"]
+      resources = [var.broker_arn]
     },
     secrets_manager_get_value = {
       effect    = "Allow",
@@ -110,7 +110,7 @@ resource "aws_secretsmanager_secret_version" "this" {
 }
 
 provider "rabbitmq" {
-  endpoint = "https://b-0fdaad4f-1ca3-4a80-b189-ee129dc18388.mq.us-east-1.amazonaws.com"
+  endpoint = var.broker_endpoint
   username = "hardcore"
   password = var.broker_password
 }
